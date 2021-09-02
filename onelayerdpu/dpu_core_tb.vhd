@@ -365,7 +365,7 @@ begin  -- architecture sim_only
       mp_feature_image_width   <= (others => '1');
       mp_number_of_features    <= (others => '1');
   
-      number_of_active_neurons <= std_logic_vector(to_unsigned(10, 10));
+      number_of_active_neurons <= std_logic_vector(to_unsigned(20, 10));
       throttle_rate            <= std_logic_vector(to_unsigned(21, 10));
 
       -- Set up Weights
