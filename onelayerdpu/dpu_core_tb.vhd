@@ -512,7 +512,7 @@ begin  -- architecture sim_only
       feature_valid <= '0';
 
 
-      wait for 250 ns;
+      wait for 2500 ns;
       assert output_count = 13*13*34  report "Incorrect number of output data" severity failure;
       reset_output_count <= true;
       wait for 20 ns;
