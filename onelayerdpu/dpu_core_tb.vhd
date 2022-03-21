@@ -33,7 +33,7 @@
 -- Author     : WINDOWS-LK2ORD6  <am@WINDOWS-LK2ORD6>
 -- Company    : 
 -- Created    : 2021-04-07
--- Last update: 2021-06-01
+-- Last update: 2022-02-18
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -1055,7 +1055,7 @@ begin  -- architecture sim_only
         layer_size        => 128,
         input_mask_height => 3,
         input_mask_width  => 3,
-        input_no_features => 128,
+        input_no_features => 256,
         neuron_skip       => 0,
         clk               => clk,
         weight_stream     => weight_stream,
@@ -1110,7 +1110,7 @@ begin  -- architecture sim_only
         layer_size        => 128,
         input_mask_height => 3,
         input_mask_width  => 3,
-        input_no_features => 128,
+        input_no_features => 256,
         neuron_skip       => 128,
         clk               => clk,
         weight_stream     => weight_stream,
@@ -1167,7 +1167,7 @@ begin  -- architecture sim_only
         layer_size        => 128,
         input_mask_height => 3,
         input_mask_width  => 3,
-        input_no_features => 128,
+        input_no_features => 256,
         neuron_skip       => 256,
         clk               => clk,
         weight_stream     => weight_stream,
@@ -1223,7 +1223,7 @@ begin  -- architecture sim_only
         layer_size        => 128,
         input_mask_height => 3,
         input_mask_width  => 3,
-        input_no_features => 128,
+        input_no_features => 256,
         neuron_skip       => 384,
         clk               => clk,
         weight_stream     => weight_stream,
@@ -1261,7 +1261,7 @@ begin  -- architecture sim_only
 
       -- Read Weights from file 
       relu                     <= '1';
-      conv_3x3                 <= '1';
+      conv_3x3                 <= '1'; 
       use_maxpool              <= '0';
       feature_image_width      <= std_logic_vector(to_unsigned(13, 14));
       number_of_features       <= std_logic_vector(to_unsigned(512, 12));
@@ -1286,7 +1286,7 @@ begin  -- architecture sim_only
           layer_size        => 128,
           input_mask_height => 3,
           input_mask_width  => 3,
-          input_no_features => 128,
+          input_no_features => 512,
           neuron_skip       => 128*i,
           clk               => clk,
           weight_stream     => weight_stream,
@@ -1336,7 +1336,7 @@ begin  -- architecture sim_only
       throttle_rate            <= std_logic_vector(to_unsigned(384, 10));
 
       for i in 0 to 1 loop
-        -- Implement block of 128 neurons of layer 11
+        -- Implement block of 128 neurons of layer 12
         -- Using Tiny Yolo V3 Model 
 
         read_xcaffe_file(
@@ -1349,7 +1349,7 @@ begin  -- architecture sim_only
           layer_size        => 128,
           input_mask_height => 1,
           input_mask_width  => 1,
-          input_no_features => 128,
+          input_no_features => 1024,
           neuron_skip       => 128*i,
           clk               => clk,
           weight_stream     => weight_stream,
@@ -1400,7 +1400,7 @@ begin  -- architecture sim_only
       throttle_rate            <= std_logic_vector(to_unsigned(256, 10));
 
       for i in 0 to 3 loop
-        -- Implement block of 128 neurons of layer 11
+        -- Implement block of 128 neurons of layer 13
         -- Using Tiny Yolo V3 Model 
 
         read_xcaffe_file(
