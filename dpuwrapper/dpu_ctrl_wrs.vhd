@@ -116,7 +116,7 @@ architecture rtl of dpu_ctrl_wrs is
 
   signal dpu_ctrl_sr, dpu_ctrl_iword : std_logic_vector(1023 downto 0) := (others => '0');
 
-  type iwfsm_type is (idle,read_iw,wait_iw,reading_iw,read_weights,wait_weights,reading_weights,start_writer,start_writer2,start_reader2,start_dpu,dpu_active,in_error);
+  type iwfsm_type is (idle,read_iw,wait_iw,reading_iw,read_weights,wait_weights,reading_weights,start_writer,start_writer2,start_reader2,start_dpu,dpu_active,in_error,dpu_pause);
   
   signal iwfsm_state : iwfsm_type := idle;
 
@@ -167,6 +167,8 @@ architecture rtl of dpu_ctrl_wrs is
   signal odm_addr_incr     : std_logic_vector(31 downto 0);
   signal odm2_command_count : std_logic_vector(23 downto 0);
   signal odm2_addr_incr     : std_logic_vector(31 downto 0);
+
+  signal dpu_pause_counter : unsigned(7 downto 0) := (others => '0');
   
 begin
 
@@ -222,6 +224,7 @@ begin
         idm2_status_ready <= '1';
         odm_end_detected <= '0';
         odm2_end_detected <= '0';
+        dpu_pause_counter <= (others => '0');
       else
         case iwfsm_state is
           when idle =>
@@ -231,15 +234,10 @@ begin
               iudm_valid <= '1';
               iudm_status_ready <= '1';
               iudm_data_ready <= '1';
-            elsif next_start_addr_valid = '1' then
-              iwfsm_state <= read_iw;
-              iudm_command <= X"00" & next_start_addr & X"40800080";
-              iudm_valid <= '1';
-              iudm_status_ready <= '1';
-              iudm_data_ready <= '1';
-            end if;
+            end if;          
             odm_end_detected <= '0';
             odm2_end_detected <= '0';
+            dpu_pause_counter <= (others => '0');
           when read_iw =>
             if iudm_ready = '1' then
               iwfsm_state <= wait_iw;
@@ -337,7 +335,7 @@ begin
             if int_odm_status_valid = '1' then
               if int_odm_status(7) = '1' then
                 if odm2_end_detected = '1' or odm2_enable = '0' then
-                  iwfsm_state <= idle;
+                  iwfsm_state <= dpu_pause;
                 else
                   odm_end_detected <= '1';
                 end if;
@@ -349,7 +347,7 @@ begin
             if int_odm2_status_valid = '1' then
               if int_odm2_status(7) = '1' then
                 if odm_end_detected = '1' then
-                  iwfsm_state <= idle;
+                  iwfsm_state <= dpu_pause;
                 else
                   odm2_end_detected <= '1';
                 end if;
@@ -370,6 +368,23 @@ begin
             end if;
           when in_error =>
             if clear_error = '1' then
+              iwfsm_state <= dpu_pause;
+            end if;
+          when dpu_pause =>
+            -- Extra state to pause between commands in chain to allow writes
+            -- to flush through to DDR
+            if next_start_addr_valid = '1' then
+              if dpu_pause_counter = "11111111" then
+                dpu_pause_counter <= dpu_pause_counter+1;
+              else
+                iwfsm_state <= read_iw;
+                iudm_command <= X"00" & next_start_addr & X"40800080";
+                iudm_valid <= '1';
+                iudm_status_ready <= '1';
+                iudm_data_ready <= '1';
+                dpu_pause_counter <= (others => '0');
+              end if;
+            else
               iwfsm_state <= idle;
             end if;
           when others =>
@@ -406,6 +421,7 @@ begin
         when start_reader2 => access_error(51 downto 48) <= "1010";
         when start_dpu => access_error(51 downto 48) <= "0110";             
         when dpu_active => access_error(51 downto 48) <= "0111";
+        when dpu_pause => access_error(51 downto 48) <= "1011";
         when in_error => access_error(51 downto 48) <= "1111";
         when others => access_error(51 downto 48) <= "1110";
       end case;
