@@ -33,7 +33,7 @@
 -- Author     : WINDOWS-LK2ORD6  <am@WINDOWS-LK2ORD6>
 -- Company    : 
 -- Created    : 2021-04-07
--- Last update: 2021-06-18
+-- Last update: 2021-09-02
 -- Platform   : 
 -- Standard   : VHDL'93/02
 -------------------------------------------------------------------------------
@@ -410,7 +410,7 @@ begin  -- architecture sim_only
       mp_feature_image_width   <= (others => '1');
       mp_number_of_features    <= (others => '1');
   
-      number_of_active_neurons <= std_logic_vector(to_unsigned(10, 10));
+      number_of_active_neurons <= std_logic_vector(to_unsigned(20, 10));
       throttle_rate            <= std_logic_vector(to_unsigned(21, 10));
 
       -- Set up Weights
@@ -472,7 +472,7 @@ begin  -- architecture sim_only
 
 -- Allow time for zero pad data to flush through
       wait for 50us;
-      assert output_count = 32*32*10  report "Incorrect number of output data" severity failure;
+      assert output_count = 32*32*20  report "Incorrect number of output data" severity failure;
       reset_output_count <= true;
       wait for 20 ns;
       reset_output_count <= false;
@@ -557,7 +557,7 @@ begin  -- architecture sim_only
       feature_valid <= '0';
 
 
-      wait for 2000 ns;
+      wait for 2500 ns;
       assert output_count = 13*13*34  report "Incorrect number of output data" severity failure;
       reset_output_count <= true;
       wait for 20 ns;
