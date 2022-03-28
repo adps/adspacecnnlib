@@ -9,4 +9,4 @@ Code in onelayerdpu folder
 Part 2: A Triple Mode redundant DPU
 Code in onelayerdpu_tmr folder
 Part 3: DPU Control and Interfacing
-Part 4: In development
+Part 4: Implementation on KU060 using ADA-SDEV-KIT
